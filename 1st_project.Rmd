@@ -1,5 +1,5 @@
 ---
-title: "1st_project"
+title: "Protein in blood"
 author: "Ignacio Almodóvar & Pilar Gonzalez"
 date: "2/9/2022"
 output: pdf_document
@@ -10,4 +10,30 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## PERSPSTIVES ON STATISTICS
+
+# A
+
+This study wants to estimate the concentration of protein in the blood according to the genetic profile of each patient.
+
+In other words, which genes are more related to the concentration and which are the most important ones to determine this concentration.
+
+This dataset has 10 variables and 100 observations. Each observation can be understood as a patient. Whereas, the variables are the information collected from them. There are 8 categorical variable (1 for each gene) with levels from 1 to 3 and a continuous variable (which will be our target) representing the concentration of proteins in blood. There is also an id variable that we are not going to consider in our study as it does not add any information.
+
+```{r}
+
+```
+
+
+# M
+
+```{r}
+
+```
+
+
+# $A^-1$
+
+```{r}
+datos=read.csv("gendata.csv",sep=";")
+```
 
