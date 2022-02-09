@@ -1,0 +1,13 @@
+---
+title: "1st_project"
+author: "Ignacio Almodóvar & Pilar Gonzalez"
+date: "2/9/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## PERSPSTIVES ON STATISTICS
+
