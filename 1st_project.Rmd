@@ -1,7 +1,8 @@
 ---
-title: "Protein in blood"
+title: "Protein concentration in blood analysis"
+subtitle: "Perspectives in statistics"
 author: "Ignacio Almodóvar & Pilar Gonzalez"
-date: "2/9/2022"
+date: "14/2/2022"
 output: pdf_document
 ---
 
@@ -13,28 +14,22 @@ library(dplyr)
 library(caret)
 ```
 
-## PERSPSTIVES ON STATISTICS
-
-# A
+# A: Real Problem
 
 This study wants to estimate the concentration of protein in the blood according to the genetic profile of each patient. In other words, which genes are more related to the concentration and which are the most important ones to determine this concentration.
 
-This dataset has 10 variables and 100 observations. Each observation can be understood as a patient. Whereas, the variables are the information collected from them. There are 8 categorical variables (1 for each gene) with levels from 1 to 3 and a continuous variable (which will be our target) representing the concentration of proteins in blood. There is also an id variable that we are not going to consider in our study as it does not add any information.
+This dataset has 10 variables and 100 observations. Each observation can be understood as a patient. Whereas, the variables are the information collected from them. There are 8 continuous variables (1 for each gene) with values from 1 to 3 and another variable (which will be our target) representing the concentration of proteins in blood. There is also an id variable that we are not going to consider in our study as it does not add any information.
 
 For this analysis we are going to consider the values of each gene as counts in terms of how many dominant allele there are in each gene, for "A" being the dominant and "a" the recessive one.
 
-1 = "aa"
-2 = "aA o Aa"
-3 = "AA"
-
-# M
-
 ```{r}
-
+datos=read.csv("gendata.csv",sep=";")
+datos_modelo=datos
+datos_modelo$id=NULL
+head(datos_modelo)
 ```
 
-
-# $A^-1$
+# M: Statistical Problem
 
 ```{r}
 datos=read.csv("gendata.csv",sep=";")
@@ -42,19 +37,46 @@ datos_modelo=datos
 datos_modelo$id=NULL
 ```
 
-Split into train and test
-```{r}
-set.seed(123)
-split_index=createDataPartition(datos_modelo$conc,times=1,p=0.7,list = F)
-trainSet=datos_modelo[split_index,]
-testSet=datos_modelo[-split_index,]
-```
+As our goal is to know which genes are more related to the blood concentration, we are going to fit the linear model:
 
-model
+$$Y_{cons}=\beta_0 + \beta_{1}snp1+ \beta_{2}snp2+ \beta_{3}snp3+ \beta_{4}snp4+ \beta_{5}snp5 + \beta_{6}snp6 + \beta_{7}snp7 + \beta_{8}snp8$$
+This way we can obtain the coefficients and see the relationship of each variable with the concentration.
+
+To fit a linear model we usually first split our data into training and test sets. However, as our goal is not to predict the concentration in blood but to see which genes are the most related to the concentration, we are going to fit the model with all the data available. 
+
 ```{r}
-modelo=lm(data=trainSet,formula = conc~.)
+modelo=lm(data=datos_modelo,formula = conc~.)
 summary(modelo)
 par(mfrow=c(2,2))
 plot(modelo)
 ```
+
+From the graphs obtained we can assume that our model fits correctly our dataset, even though the adjusted R-squared is not very high. 
+
+# $A^{-1}$ : Analysis of results
+
+From the output of the model shown before we have obtained that the most important genes (doe to its coefficients) are 1, 2 and 5. When the number of dominant allele increases in gens 1 and 2, the concentration of proteins in blood also increases by 2.97 and 2.62 respectively, whereas when the number of alleles in gen 5 increases, the concentration decreases by 1.5.
+
+Also we can see from the model that the p-value for the other genes is high so we consider that they are not relevant for determining the concentration of protein in blood. Nevertheless you can see that for each gene, an increment of the number of dominant alleles reduces the protein concentration in blood.
+
+
+
+
+
+```{r,echo=FALSE}
+# lab=c("snp1","snp2","snp3","snp4","snp5","snp6","snp7","snp8")
+# datos_modelo_factor=datos_modelo
+# datos_modelo_factor[lab] <- lapply(datos_modelo_factor[lab], factor)
+# summary(datos_modelo_factor)
+```
+
+```{r,echo=FALSE}
+# modelo3=lm(data=datos_modelo_factor, conc~.)
+# summary(modelo3)
+# par(mfrow=c(2,2))
+# plot(modelo3)
+```
+
+
+
 
