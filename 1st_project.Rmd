@@ -7,22 +7,25 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(magrittr)
+library(dplyr)
+library(caret)
 ```
 
 ## PERSPSTIVES ON STATISTICS
 
 # A
 
-This study wants to estimate the concentration of protein in the blood according to the genetic profile of each patient.
+This study wants to estimate the concentration of protein in the blood according to the genetic profile of each patient. In other words, which genes are more related to the concentration and which are the most important ones to determine this concentration.
 
-In other words, which genes are more related to the concentration and which are the most important ones to determine this concentration.
+This dataset has 10 variables and 100 observations. Each observation can be understood as a patient. Whereas, the variables are the information collected from them. There are 8 categorical variables (1 for each gene) with levels from 1 to 3 and a continuous variable (which will be our target) representing the concentration of proteins in blood. There is also an id variable that we are not going to consider in our study as it does not add any information.
 
-This dataset has 10 variables and 100 observations. Each observation can be understood as a patient. Whereas, the variables are the information collected from them. There are 8 categorical variable (1 for each gene) with levels from 1 to 3 and a continuous variable (which will be our target) representing the concentration of proteins in blood. There is also an id variable that we are not going to consider in our study as it does not add any information.
+For this analysis we are going to consider the values of each gene as counts in terms of how many dominant allele there are in each gene, for "A" being the dominant and "a" the recessive one.
 
-```{r}
-
-```
-
+1 = "aa"
+2 = "aA o Aa"
+3 = "AA"
 
 # M
 
@@ -35,5 +38,23 @@ This dataset has 10 variables and 100 observations. Each observation can be unde
 
 ```{r}
 datos=read.csv("gendata.csv",sep=";")
+datos_modelo=datos
+datos_modelo$id=NULL
+```
+
+Split into train and test
+```{r}
+set.seed(123)
+split_index=createDataPartition(datos_modelo$conc,times=1,p=0.7,list = F)
+trainSet=datos_modelo[split_index,]
+testSet=datos_modelo[-split_index,]
+```
+
+model
+```{r}
+modelo=lm(data=trainSet,formula = conc~.)
+summary(modelo)
+par(mfrow=c(2,2))
+plot(modelo)
 ```
 
