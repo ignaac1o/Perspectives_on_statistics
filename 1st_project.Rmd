@@ -32,12 +32,12 @@ knitr::kable(head(datos_modelo))
 # M: Statistical Problem
 
 
-As our goal is to know which genes are more related to the blood concentration, we are going to fit the linear model:
+As our goal is to know which genes are more related to the concentration of proteins in blood, we are going to fit the linear model:
 
 $$Y_{cons}=\beta_0 + \beta_{1}snp1+ \beta_{2}snp2+ \beta_{3}snp3+ \beta_{4}snp4+ \beta_{5}snp5 + \beta_{6}snp6 + \beta_{7}snp7 + \beta_{8}snp8$$
 This way we can obtain the coefficients and see the relationship of each variable with the concentration.
 
-To fit a linear model we usually first split our data into training and test sets. However, as our goal is not to predict the concentration in blood but to see which genes are the most related to the concentration, we are going to fit the model with all the data available. 
+To fit a linear model we usually first split our data into training and test sets. However, as our goal is not to predict the concentration of proteins in blood but to see which genes are the most related to the concentration, we are going to fit the model with all the data available. 
 
 ```{r,comment=NA,echo=FALSE,out.height="70%"}
 modelo=lm(data=datos_modelo,formula = conc~.)
@@ -54,6 +54,7 @@ From the output of the model shown before we have obtained that the most importa
 
 Also we can see from the model that the p-value for the other genes is high so we consider that they are not relevant for determining the concentration of protein in blood. Nevertheless you can see that for each gene, an increment of the number of dominant alleles reduces the protein concentration in blood.
 
+\newpage
 # Appendix
 
 ```{r,comment=NA}
