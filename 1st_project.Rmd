@@ -1,7 +1,7 @@
 ---
 title: "Protein concentration in blood analysis"
 subtitle: "Perspectives in statistics"
-author: "Ignacio Almodóvar & Pilar Gonzalez"
+author: "Ignacio Almodóvar & María del Pilar Gonzalez"
 date: "14/2/2022"
 output: pdf_document
 ---
@@ -22,20 +22,15 @@ This dataset has 10 variables and 100 observations. Each observation can be unde
 
 For this analysis we are going to consider the values of each gene as counts in terms of how many dominant allele there are in each gene, for "A" being the dominant and "a" the recessive one.
 
-```{r}
+```{r,echo=FALSE,comment=NA}
 datos=read.csv("gendata.csv",sep=";")
 datos_modelo=datos
 datos_modelo$id=NULL
-head(datos_modelo)
+knitr::kable(head(datos_modelo))
 ```
 
 # M: Statistical Problem
 
-```{r}
-datos=read.csv("gendata.csv",sep=";")
-datos_modelo=datos
-datos_modelo$id=NULL
-```
 
 As our goal is to know which genes are more related to the blood concentration, we are going to fit the linear model:
 
@@ -44,14 +39,14 @@ This way we can obtain the coefficients and see the relationship of each variabl
 
 To fit a linear model we usually first split our data into training and test sets. However, as our goal is not to predict the concentration in blood but to see which genes are the most related to the concentration, we are going to fit the model with all the data available. 
 
-```{r}
+```{r,comment=NA,echo=FALSE,out.height="70%"}
 modelo=lm(data=datos_modelo,formula = conc~.)
-summary(modelo)
+knitr::kable(summary(modelo)$coef[,c(1,4)])
 par(mfrow=c(2,2))
 plot(modelo)
 ```
 
-From the graphs obtained we can assume that our model fits correctly our dataset, even though the adjusted R-squared is not very high. 
+From the graphs obtained we can assume that our model fits correctly our dataset, even though the adjusted R-squared (0.2445369) is not very high. 
 
 # $A^{-1}$ : Analysis of results
 
@@ -59,23 +54,22 @@ From the output of the model shown before we have obtained that the most importa
 
 Also we can see from the model that the p-value for the other genes is high so we consider that they are not relevant for determining the concentration of protein in blood. Nevertheless you can see that for each gene, an increment of the number of dominant alleles reduces the protein concentration in blood.
 
+# Appendix
 
-
-
-
-```{r,echo=FALSE}
-# lab=c("snp1","snp2","snp3","snp4","snp5","snp6","snp7","snp8")
-# datos_modelo_factor=datos_modelo
-# datos_modelo_factor[lab] <- lapply(datos_modelo_factor[lab], factor)
-# summary(datos_modelo_factor)
+```{r,comment=NA}
+datos=read.csv("gendata.csv",sep=";")
+datos_modelo=datos
+datos_modelo$id=NULL
+head(datos_modelo)
 ```
 
-```{r,echo=FALSE}
-# modelo3=lm(data=datos_modelo_factor, conc~.)
-# summary(modelo3)
-# par(mfrow=c(2,2))
-# plot(modelo3)
+```{r,comment=NA,out.height="70%"}
+modelo=lm(data=datos_modelo,formula = conc~.)
+summary(modelo)
+par(mfrow=c(2,2))
+plot(modelo)
 ```
+
 
 
 
