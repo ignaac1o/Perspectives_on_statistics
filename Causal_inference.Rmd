@@ -2,46 +2,92 @@
 title: "Causal_inference"
 author: "Ignacio Almodóvar & Pilar Gonzalez"
 date: "3/14/2022"
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(rddtools)
-```
-
-```{r}
-data=read.csv(file = "gendata.csv",sep = ";")
-data$id=NULL
-summary(data)
-```
-
-```{r}
-rdd.dataset=rdd_data(y=conc,x=snp1,data = data,cutpoint = 2)
-plot(x=rdd.dataset$x,y=rdd.dataset$y)
-smoothScatter(rdd.dataset)
-plot(x=data$snp1,y=data$conc)
-```
-
-```{r}
+library(knitr)
+library(Matching)
+library(dplyr)
 library(rdd)
 library(Formula)
-myrdd=RDestimate(data=data,formula=conc ~ snp1 | snp2,cutpoint = 2.5)
+```
 
+```{r,include=FALSE}
+data=read.csv(file = "gendata.csv",sep = ";")
+data$id=NULL
+```
+
+# Practice on Causal Inference
+
+As in the last practice, for this project, we are also going to use the gendata dataset. However, now our interest is to provide an estimation of the causal effect of the most significant gene for predicting the causing the concentration of proteins in blood.
+
+This dataset has 10 variables and 100 observations. Each observation can be understood as a patient. There are 8 continuous variables (1 for each gene) with values from 1 to 3 and another variable (which will be our target) representing the concentration of proteins in blood.
+
+From the results that we obtained in the last practice we came to the conclusion that the most important gene was the first gene (snp1) so we are going to calculate the casual effect for this variable.
+
+For applying casual inference we have seen different methods in class:
+
+- Regression discontinuity design (RDD)
+- Matching
+- Propensity Score Matching
+
+RDD cannot be used for this problem because the variable snp1 used to determine the treatment and control groups is not quantitative.
+
+Therefore we will use the Matching method to do causal inference. For this we will consider the following parameters:
+
+- Y: As the response variable. In our case it will be the protein concentration in blood.
+
+- Tr: Is a binary variable that indicates the treatment (1) and control (0) groups. It is obtained by setting a threshold in the variable that we are studying. For our case, the threshold selected is 2 as we are splitting the data into recessive and dominant genes. Genes labeled as "2" and "3" are considered dominants as they have at least 1 dominant allele.
+
+- X: Matrix containing the covariates. Which means the rest of the variables available.
+
+Inside this model, we will evaluate the causal effect using the average treatment effect for treated (ATT) but it could be also done with Average Treatment Effect (ATE).
+
+```{r,include=FALSE}
+X = data[,3:9] %>% as.matrix()
+match_model=Match(Y = data$conc,Tr=(data$snp1>=2),X=X,estimand = "ATT",M=1)
+summary(match_model)
+```
+
+Running the model, we obtained an estimation of 4.6493 for the ATT of snp1. Even though this was only necessary for the most important gene we also wanted to see the ATT estimation for the other genes. Therefore we build a loop to obtain the different estimators. We can see the results obtained in the table below.
+
+```{r,include=FALSE}
+x=c()
+for (i in 1:(ncol(data)-1)) {
+  X=data[,-c(1,(i+1))] %>% as.matrix() 
+  A=Match(Y = data$conc,Tr=(data[,(i+1)]>=2),X=X,estimand = "ATT",M=1)
+  x[i]=A$est
+}
+
+nam=c("snp1","snp2","snp3","snp4","snp5","snp6","snp7","snp8")
+
+dataframe=data.frame(nam,x)
+names(dataframe)=c("Gene","ATT")
 ```
 
 
 ```{r}
-myrdd=rdd_reg_lm(rdd.dataset)
-summary(myrdd)
+options(digits = 6)
+kable(t(dataframe))
 ```
+
+Comparing these results also with the ones obtained in the first practice we can say that the both make total sense. The genes that we considered most important ones (snp1 and snp2) are also the ones that have the highest causal effect.
+
+
+
 
 
 ```{r}
-library(Matching)
-A=Match(Y = data$conc,Tr=(data$snp1>2),X=data$snp2,estimand = "ATT",M=1)
+X = data[,3:9] %>% as.matrix()
+A=Matching::Match(Y = data$conc,Tr=(data$snp1>=2),X=X,estimand = "ATT",M=1)
 summary(A)
-MB <- MatchBalance((data$snp1>2) ~ data$snp2, match.out = A, nboots = 200)
-A
+
+MB <- MatchBalance((data$snp1>=2) ~ X, match.out = A, nboots = 500)
 ```
+
+
+
 
