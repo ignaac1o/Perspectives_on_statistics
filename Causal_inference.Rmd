@@ -31,7 +31,9 @@ From the results that we obtained in the last practice we came to the conclusion
 For applying casual inference we have seen different methods in class:
 
 - Regression discontinuity design (RDD)
+
 - Matching
+
 - Propensity Score Matching
 
 RDD cannot be used for this problem because the variable snp1 used to determine the treatment and control groups is not quantitative.
@@ -69,7 +71,7 @@ names(dataframe)=c("Gene","ATT")
 ```
 
 
-```{r}
+```{r,echo=FALSE}
 options(digits = 6)
 kable(t(dataframe))
 ```
