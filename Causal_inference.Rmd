@@ -1,0 +1,47 @@
+---
+title: "Causal_inference"
+author: "Ignacio Almodóvar & Pilar Gonzalez"
+date: "3/14/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rddtools)
+```
+
+```{r}
+data=read.csv(file = "gendata.csv",sep = ";")
+data$id=NULL
+summary(data)
+```
+
+```{r}
+rdd.dataset=rdd_data(y=conc,x=snp1,data = data,cutpoint = 2)
+plot(x=rdd.dataset$x,y=rdd.dataset$y)
+smoothScatter(rdd.dataset)
+plot(x=data$snp1,y=data$conc)
+```
+
+```{r}
+library(rdd)
+library(Formula)
+myrdd=RDestimate(data=data,formula=conc ~ snp1 | snp2,cutpoint = 2.5)
+
+```
+
+
+```{r}
+myrdd=rdd_reg_lm(rdd.dataset)
+summary(myrdd)
+```
+
+
+```{r}
+library(Matching)
+A=Match(Y = data$conc,Tr=(data$snp1>2),X=data$snp2,estimand = "ATT",M=1)
+summary(A)
+MB <- MatchBalance((data$snp1>2) ~ data$snp2, match.out = A, nboots = 200)
+A
+```
+
