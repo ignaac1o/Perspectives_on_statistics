@@ -13,6 +13,7 @@ library(Matching)
 library(dplyr)
 library(rdd)
 library(Formula)
+library(randomForest)
 ```
 
 ```{r,include=FALSE}
@@ -84,7 +85,7 @@ kable(t(dataframe))
 
 Comparing these results also with the ones obtained in the first practice we can say that the both make total sense. The genes that we considered most important ones (snp1 and snp2) are also the ones that have the highest causal effect.
 
-
+Another approach to do causal inference could be the use of a Random Forest Model. It can be use when the response is not necessary linear with respect to the predictors. However, we started to test it to see how will it work and the results obtained were not very promising. Using this model we obtained about a 15% of the variance explained, which means that the casual effect obtained will only refer to a 15% of the population of the study, which is actually a very low percentage. Therefore, we decided not to continue with this study.
 
 
 ```{r,include=FALSE}
@@ -119,6 +120,11 @@ nam=c("snp1","snp2","snp3","snp4","snp5","snp6","snp7","snp8")
 dataframe=data.frame(nam,x)
 names(dataframe)=c("Gene","ATT")
 dataframe
+
+rf=randomForest(conc~snp1+snp2+snp3+snp4+snp5+snp6+snp7+snp8,data=data,
+                importance=TRUE,mtry=3,ntree=10000)
+rf
+
 ```
 
 
