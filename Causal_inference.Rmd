@@ -58,7 +58,9 @@ match_model=Match(Y = data$conc,Tr=(data$snp1>=2),X=X,estimand = "ATT",M=1)
 summary(match_model)
 ```
 
-Running the model, we obtained an estimation of 4.6493 for the ATT of snp1. Even though this was only necessary for the most important gene we also wanted to see the ATT estimation for the other genes. Therefore we build a loop to obtain the different estimators. We can see the results obtained in the table below.
+Running the model, we obtained an estimation of 4.6493 for the ATT of snp1. Now, we need to check the balance of our model so we use the function *MatchBarance*. If the means of the covariates are the same for each group, then we say those covariates are balanced and the two groups are exchangeable with respect to those covariates. We observe that the most balanced covariates are snp3 and snp7.  
+
+Even though this was only necessary for the most important gene we also wanted to see the ATT estimation for the other genes. Therefore we build a loop to obtain the different estimators. We can see the results obtained in the table below.
 
 ```{r,include=FALSE}
 x=c()
@@ -90,7 +92,7 @@ X = data[,3:9] %>% as.matrix()
 A=Matching::Match(Y = data$conc,Tr=(data$snp1>=2),X=X,estimand = "ATT",M=1)
 summary(A)
 
-MB <- MatchBalance((data$snp1>=2) ~ X, match.out = A, nboots = 500)
+MB <- MatchBalance((data$snp1>=2) ~ X, match.out = A, nboots = 1000)
 ```
 
 \newpage
@@ -102,7 +104,7 @@ MB <- MatchBalance((data$snp1>=2) ~ X, match.out = A, nboots = 500)
 X = data[,3:9] %>% as.matrix()
 match_model=Match(Y = data$conc,Tr=(data$snp1>=2),X=X,estimand = "ATT",M=1)
 summary(match_model)
-MB <- MatchBalance((data$snp1>=2) ~ X, match.out = match_model, nboots = 500)
+MB <- MatchBalance((data$snp1>=2) ~ X, match.out = match_model, nboots = 1000)
 
 # Match model for every gen
 x=c()
