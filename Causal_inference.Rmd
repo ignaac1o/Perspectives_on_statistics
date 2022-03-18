@@ -1,5 +1,5 @@
 ---
-title: "Causal_inference"
+title: "Causal inference"
 author: "Ignacio Almodóvar & Pilar Gonzalez"
 date: "3/14/2022"
 output: pdf_document
@@ -24,9 +24,9 @@ data$id=NULL
 
 As in the last practice, for this project, we are also going to use the gendata dataset. However, now our interest is to provide an estimation of the causal effect of the most significant gene for predicting the causing the concentration of proteins in blood.
 
-This dataset has 10 variables and 100 observations. Each observation can be understood as a patient. There are 8 continuous variables (1 for each gene) with values from 1 to 3 and another variable (which will be our target) representing the concentration of proteins in blood.
+This dataset has 10 variables and 100 observations. Each observation can be understood as a patient. There are 8 continuous variables (1 for each gene) with values from 1 to 3 and another variable (which will be our target) representing the concentration of proteins in blood. 
 
-From the results that we obtained in the last practice we came to the conclusion that the most important gene was the first gene (snp1) so we are going to calculate the casual effect for this variable.
+From the results that we obtained in the last practice we came to the conclusion that the most important gene was the first gene (snp1) so we are going to calculate the casual effect for this variable. We are going to consider that an individual belongs to the treatment group if $snp1=2,3$, i.e. the gen has one or two dominant alleles and belongs to the control group if the gen has two alleles, $snp1=1$.
 
 For applying casual inference we have seen different methods in class:
 
@@ -38,7 +38,7 @@ For applying casual inference we have seen different methods in class:
 
 RDD cannot be used for this problem because the variable snp1 used to determine the treatment and control groups is not quantitative.
 
-Therefore we will use the Matching method to do causal inference. For this we will consider the following parameters:
+Therefore we will use the Matching method. This method matches individuals with the same values for the covariates but one is treated and the other is not. For this we will consider the following parameters:
 
 - Y: As the response variable. In our case it will be the protein concentration in blood.
 
@@ -47,6 +47,10 @@ Therefore we will use the Matching method to do causal inference. For this we wi
 - X: Matrix containing the covariates. Which means the rest of the variables available.
 
 Inside this model, we will evaluate the causal effect using the average treatment effect for treated (ATT) but it could be also done with Average Treatment Effect (ATE).
+
+Because it is typically impossible to calculate individual-level causal effects, we
+focus attention on the estimation average causal effects. The average treatment effect (ATE) is $$E[\delta]=E[Y\mid D=1]-E[Y\mid D=0]=E[Y^1]-E[Y^0],$$ where $Y=Y^1$ if $D=1$, $Y=Y^0$ if $D=0$ and D indicates whether an individual belongs to the treatment ($D=1$) or the control($D=0$) group. Also, a conditional average treatment effect of particular interest is the average treatment effect of the treated (ATT) defined as: $E[\delta \mid D=1]=E[Y^1\mid D=1]-E[Y^0\mid D=1].$ Notice that $E[Y^0|D=1]$ is unobserved so it refers to a counterfactual variable which is not realized in our observed sample. 
+
 
 ```{r,include=FALSE}
 X = data[,3:9] %>% as.matrix()
@@ -81,8 +85,7 @@ Comparing these results also with the ones obtained in the first practice we can
 
 
 
-
-```{r}
+```{r,include=FALSE}
 X = data[,3:9] %>% as.matrix()
 A=Matching::Match(Y = data$conc,Tr=(data$snp1>=2),X=X,estimand = "ATT",M=1)
 summary(A)
@@ -90,6 +93,31 @@ summary(A)
 MB <- MatchBalance((data$snp1>=2) ~ X, match.out = A, nboots = 500)
 ```
 
+\newpage
+
+# Appendix
+
+```{r,comment=NA}
+#Match model for snp1
+X = data[,3:9] %>% as.matrix()
+match_model=Match(Y = data$conc,Tr=(data$snp1>=2),X=X,estimand = "ATT",M=1)
+summary(match_model)
+MB <- MatchBalance((data$snp1>=2) ~ X, match.out = match_model, nboots = 500)
+
+# Match model for every gen
+x=c()
+for (i in 1:(ncol(data)-1)) {
+  X=data[,-c(1,(i+1))] %>% as.matrix() 
+  A=Match(Y = data$conc,Tr=(data[,(i+1)]>=2),X=X,estimand = "ATT",M=1)
+  x[i]=A$est
+}
+
+nam=c("snp1","snp2","snp3","snp4","snp5","snp6","snp7","snp8")
+
+dataframe=data.frame(nam,x)
+names(dataframe)=c("Gene","ATT")
+dataframe
+```
 
 
 
