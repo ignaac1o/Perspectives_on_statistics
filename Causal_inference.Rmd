@@ -1,5 +1,6 @@
 ---
 title: "Causal inference"
+subtitle: "Perspectives on Statistics"
 author: "Ignacio Almodóvar & Pilar Gonzalez"
 date: "3/14/2022"
 output: pdf_document
@@ -50,7 +51,7 @@ Therefore we will use the Matching method. This method matches individuals with 
 Inside this model, we will evaluate the causal effect using the average treatment effect for treated (ATT) but it could be also done with Average Treatment Effect (ATE).
 
 Because it is typically impossible to calculate individual-level causal effects, we
-focus attention on the estimation average causal effects. The average treatment effect (ATE) is $$E[\delta]=E[Y\mid D=1]-E[Y\mid D=0]=E[Y^1]-E[Y^0],$$ where $Y=Y^1$ if $D=1$, $Y=Y^0$ if $D=0$ and D indicates whether an individual belongs to the treatment ($D=1$) or the control($D=0$) group. Also, a conditional average treatment effect of particular interest is the average treatment effect of the treated (ATT) defined as: $E[\delta \mid D=1]=E[Y^1\mid D=1]-E[Y^0\mid D=1].$ Notice that $E[Y^0|D=1]$ is unobserved so it refers to a counterfactual variable which is not realized in our observed sample. 
+focus attention on the estimation average causal effects. The average treatment effect (ATE) is $$E[\delta]=E[Y\mid D=1]-E[Y\mid D=0]=E[Y^1]-E[Y^0],$$ where $Y=Y^1$ if $D=1$, $Y=Y^0$ if $D=0$ and D indicates whether an individual belongs to the treatment ($D=1$) or the control($D=0$) group. Also, a conditional average treatment effect of particular interest is the average treatment effect of the treated (ATT) defined as: $$E[\delta \mid D=1]=E[Y^1\mid D=1]-E[Y^0\mid D=1].$$ Notice that $E[Y^0|D=1]$ is unobserved so it refers to a counterfactual variable which is not realized in our observed sample. 
 
 
 ```{r,include=FALSE}
@@ -77,15 +78,16 @@ dataframe=data.frame(nam,x)
 names(dataframe)=c("Gene","ATT")
 ```
 
-
+\
 ```{r,echo=FALSE}
 options(digits = 6)
 kable(t(dataframe))
 ```
+\
 
 Comparing these results also with the ones obtained in the first practice we can say that the both make total sense. The genes that we considered most important ones (snp1 and snp2) are also the ones that have the highest causal effect.
 
-Another approach to do causal inference could be the use of a Random Forest Model. It can be use when the response is not necessary linear with respect to the predictors. However, we started to test it to see how will it work and the results obtained were not very promising. Using this model we obtained about a 15% of the variance explained, which means that the casual effect obtained will only refer to a 15% of the population of the study, which is actually a very low percentage. Therefore, we decided not to continue with this study.
+Another method to estimate the causal effect could be the use of a Random Forest Model. It can be use when the response is not necessary linear with respect to the predictors. However, we started to test it to see how will it work and the results obtained were not very promising. Using this model we obtained about a 15% of the variance explained, which means that the casual effect obtained will only refer to a 15% of the population of the study, which is actually a very low percentage. Therefore, we decided not to continue with this study.
 
 
 ```{r,include=FALSE}
